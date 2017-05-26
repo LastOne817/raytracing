@@ -1,0 +1,7 @@
+.idea
+cmake-build-debug
+hw4/hw4
+hw5/hw5
+*/report/*.aux
+*/report/*.log
+*/report/*.out
