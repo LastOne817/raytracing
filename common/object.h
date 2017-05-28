@@ -7,14 +7,15 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
-#define EPSILON 1.0e-5f
+#define EPSILON 1.0e-2f
 #define EQUAL(x,y) (glm::all(glm::lessThan(glm::abs((x) - (y)), glm::vec3(EPSILON))))
 
 class Ray {
 public:
     glm::vec3 origin;
     glm::vec3 direction;
-    Ray(glm::vec3 origin, glm::vec3 direction) : origin(origin), direction(glm::normalize(direction)) {};
+    double n;
+    Ray(glm::vec3 origin, glm::vec3 direction, double n) : origin(origin), direction(glm::normalize(direction)), n(n) {};
 };
 
 class Object {
@@ -26,8 +27,9 @@ public:
     double gloss;
     bool reflective;
     bool refractive;
+    double reflectWeight;
     Object (glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, double gloss, double n, bool reflective, bool refractive)
-        : ambient(ambient), diffuse(diffuse), specular(specular), gloss(gloss), n(n), reflective(reflective), refractive(refractive) {};
+        : ambient(ambient), diffuse(diffuse), specular(specular), gloss(gloss), n(n), reflective(reflective), refractive(refractive), reflectWeight(0.1) {};
     virtual std::experimental::optional<glm::vec3> intersect(Ray r) const = 0;
     virtual glm::vec3 normalAt(glm::vec3) const = 0;
     virtual Ray reflect(Ray ray) const = 0;

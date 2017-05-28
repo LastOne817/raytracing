@@ -29,6 +29,7 @@ include_directories(
 
 set(PNG_INCLUDE_DIR external/libpng-1.6.29/)
 find_package(PNG REQUIRED)
+find_package(Threads REQUIRED)
 include_directories(${PNG_INCLUDE_DIR})
 
 set(ALL_LIBS
@@ -46,11 +47,12 @@ aux_source_directory(common COMMON_SOURCES)
 
 add_executable(hw5
   hw5/main.cpp
-  ${COMMON_SOURCES})
+  ${COMMON_SOURCES} common/raytracing.cpp)
 target_link_libraries(hw5
   ${ALL_LIBS}
   ${PNG_LIBRARY}
-  )
+  ${CMAKE_THREAD_LIBS_INIT}
+)
 
 SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*" )
 

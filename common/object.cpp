@@ -22,8 +22,9 @@ std::experimental::optional<glm::vec3> Sphere::intersect(Ray r) const {
   glm::vec3 dp = center - r.origin;
   double udp = glm::dot(r.direction, dp);
   double det = udp * udp - glm::dot(dp, dp) + radius * radius;
-  if (det >= 0.0) {
+  if (det > EPSILON) {
     double s = udp - glm::sqrt(det);
+    if (s < EPSILON) return {};
     return r.origin + r.direction * s;
   }
   else return {};
@@ -39,7 +40,7 @@ glm::vec3 Polygon::normalAt(glm::vec3) const {
 
 std::experimental::optional<glm::vec3> Polygon::intersect(Ray r) const {
   double s = glm::dot(normal, point - r.origin) / glm::dot(normal, r.direction);
-  if (s < 0.0) return {};
+  if (s < EPSILON) return {};
   glm::vec3 p = r.origin + s * r.direction;
   glm::vec3 n = glm::normalize(glm::cross(vertices[1] - vertices[0], p - vertices[0]));
   for (int i = 0; i < vertices.size(); ++i) {
@@ -49,17 +50,59 @@ std::experimental::optional<glm::vec3> Polygon::intersect(Ray r) const {
 }
 
 Ray Sphere::reflect(Ray ray) const {
-  return ray;
+  glm::vec3 q = intersect(ray).value();
+  glm::vec3 L = -ray.direction;
+  glm::vec3 N = normalAt(q);
+  double n = this->n;
+  if (glm::dot(N, L) < -EPSILON) {
+    N = -N;
+    n = ray.n;
+  }
+  glm::vec3 R = glm::dot(2.0 * L, N) * N - L;
+  return Ray(q, R, ray.n);
 }
 
 Ray Sphere::refract(Ray ray) const {
-  return ray;
+  glm::vec3 q = intersect(ray).value();
+  glm::vec3 L = -ray.direction;
+  glm::vec3 N = normalAt(q);
+  double n = this->n;
+  if (glm::dot(N, L) < -EPSILON) {
+    N = -N;
+    n = ray.n;
+  }
+  double cos_i = glm::dot(L, N);
+  double cos_r = sqrt(1.0 - (ray.n / n) * (ray.n / n) * (1.0 - cos_i * cos_i));
+  glm::vec3 T = (ray.n / n * cos_i - cos_r) * N - ray.n / n * L;
+  assert(EQUAL(T, glm::normalize(T)));
+  return Ray(q, T, n);
 }
 
 Ray Polygon::reflect(Ray ray) const {
-  return ray;
+  glm::vec3 q = intersect(ray).value();
+  glm::vec3 L = -ray.direction;
+  glm::vec3 N = normalAt(q);
+  double n = this->n;
+  if (glm::dot(N, L) < -EPSILON) {
+    N = -N;
+    n = ray.n;
+  }
+  glm::vec3 R = glm::dot(2.0 * L, N) * N - L;
+  return Ray(q, R, ray.n);
 }
 
 Ray Polygon::refract(Ray ray) const {
-  return ray;
+  glm::vec3 q = intersect(ray).value();
+  glm::vec3 L = -ray.direction;
+  glm::vec3 N = normalAt(q);
+  double n = this->n;
+  if (glm::dot(N, L) < -EPSILON) {
+    N = -N;
+    n = ray.n;
+  }
+  double cos_i = glm::dot(L, N);
+  double cos_r = sqrt(1.0 - (ray.n / n) * (ray.n / n) * (1.0 - cos_i * cos_i));
+  glm::vec3 T = (ray.n / n * cos_i - cos_r) * N - ray.n / n * L;
+  assert(EQUAL(T, glm::normalize(T)));
+  return Ray(q, T, n);
 }
