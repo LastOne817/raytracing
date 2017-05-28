@@ -31,7 +31,19 @@ std::experimental::optional<glm::vec3> Sphere::intersect(Ray r) const {
 }
 
 glm::vec3 Sphere::normalAt(glm::vec3 p) const {
-  return glm::normalize(p - center);
+  if (bumpmap) {
+    glm::vec3 up = glm::vec3(0,1,0);
+    glm::vec3 z = glm::normalize(p - center);
+    if (EQUAL(up, z)) return glm::normalize(p - center);
+    glm::vec3 x = glm::normalize(glm::cross(up, z));
+    glm::vec3 y = glm::cross(z, x);
+    double u = this->u(p);
+    double v = this->v(p);
+    glm::vec3 c = bumpmap->getTexture(u, v);
+    glm::vec3 coef = (2.0 * c) - glm::vec3(1.0);
+    return glm::normalize(x * coef.x + y * coef.y + z * coef.z);
+  }
+  else return glm::normalize(p - center);
 }
 
 glm::vec3 Polygon::normalAt(glm::vec3) const {
@@ -105,4 +117,22 @@ Ray Polygon::refract(Ray ray) const {
   glm::vec3 T = (ray.n / n * cos_i - cos_r) * N - ray.n / n * L;
   assert(EQUAL(T, glm::normalize(T)));
   return Ray(q, T, n);
+}
+
+double Sphere::u(glm::vec3 point) const {
+  glm::vec3 p = (point - center) / radius;
+  return p.x;
+}
+
+double Sphere::v(glm::vec3 point) const {
+  glm::vec3 p = (point - center) / radius;
+  return p.y;
+}
+
+double Polygon::u(glm::vec3) const {
+  return 0.0;
+}
+
+double Polygon::v(glm::vec3) const {
+  return 0.0;
 }

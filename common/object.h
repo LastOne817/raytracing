@@ -7,7 +7,9 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
-#define EPSILON 1.0e-2f
+#include "texture.h"
+
+#define EPSILON 1.0e-3f
 #define EQUAL(x,y) (glm::all(glm::lessThan(glm::abs((x) - (y)), glm::vec3(EPSILON))))
 
 class Ray {
@@ -28,12 +30,18 @@ public:
     bool reflective;
     bool refractive;
     double reflectWeight;
+    Texture* texture;
+    Texture* bumpmap;
+
     Object (glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, double gloss, double n, bool reflective, bool refractive)
-        : ambient(ambient), diffuse(diffuse), specular(specular), gloss(gloss), n(n), reflective(reflective), refractive(refractive), reflectWeight(0.1) {};
+        : ambient(ambient), diffuse(diffuse), specular(specular), gloss(gloss), n(n),
+          reflective(reflective), refractive(refractive), reflectWeight(0.1), texture(nullptr), bumpmap(nullptr) {};
     virtual std::experimental::optional<glm::vec3> intersect(Ray r) const = 0;
     virtual glm::vec3 normalAt(glm::vec3) const = 0;
     virtual Ray reflect(Ray ray) const = 0;
     virtual Ray refract(Ray ray) const = 0;
+    virtual double u(glm::vec3) const = 0;
+    virtual double v(glm::vec3) const = 0;
 };
 
 class Sphere : Object {
@@ -47,6 +55,8 @@ public:
     glm::vec3 normalAt(glm::vec3) const;
     Ray reflect(Ray ray) const;
     Ray refract(Ray ray) const;
+    double u(glm::vec3) const;
+    double v(glm::vec3) const;
 };
 
 class Polygon : Object {
@@ -60,6 +70,8 @@ public:
     glm::vec3 normalAt(glm::vec3) const;
     Ray reflect(Ray ray) const;
     Ray refract(Ray ray) const;
+    double u(glm::vec3) const;
+    double v(glm::vec3) const;
 };
 
 #endif //GRAPHICS_OBJECT_H

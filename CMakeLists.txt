@@ -47,7 +47,7 @@ aux_source_directory(common COMMON_SOURCES)
 
 add_executable(hw5
   hw5/main.cpp
-  ${COMMON_SOURCES} common/raytracing.cpp)
+  ${COMMON_SOURCES})
 target_link_libraries(hw5
   ${ALL_LIBS}
   ${PNG_LIBRARY}

@@ -40,6 +40,11 @@ glm::vec3 World::trace(Ray ray, int depth) const {
 glm::vec3 World::accumulateLightSource(Object* obj, Ray ray) const {
   glm::vec3 q = obj->intersect(ray).value();
   glm::vec3 c = obj->ambient;
+  if (obj->texture) {
+    double u = obj->u(q);
+    double v = obj->v(q);
+    c = obj->texture->getTexture(u, v);
+  }
   // glm::vec3 c = glm::vec3(0);
   for(auto & light: lights) {
     if (reachable(light, q)) {
@@ -169,7 +174,7 @@ void World::createImageFromView(glm::vec3 eye, glm::vec3 direction, glm::vec3 up
 }
 
 glm::vec3 World::calculateColor(int x, int y, glm::vec3 direction, glm::vec3 right, glm::vec3 up, int width, int height, double view_width, double view_height) const {
-  bool distributed = true;
+  bool distributed = false;
   glm::vec3 color;
   if (distributed) {
     color = glm::vec3(0);
