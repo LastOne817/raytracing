@@ -38,7 +38,6 @@ public:
 
 struct thread_data {
     int id;
-    int startIndex;
     int width, height;
     World* world;
     png_byte* image;

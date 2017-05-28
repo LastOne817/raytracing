@@ -89,15 +89,16 @@ void* fillImage(void* arg) {
 
   int progress = 0;
 
-  for (y = data->startIndex ; y < data->startIndex + data->height / NTHREAD ; y++) {
+  for (int y_ = 0 ; y_ < data->height / NTHREAD ; y_++) {
+    y = data->id * data->height / NTHREAD + y_;
     for (x=0 ; x < data->width ; x++) {
       glm::vec3 color = data->world->calculateColor(x, y, data->direction, data->right, data->up, data->width, data->height, data->view_width, data->view_height);
       data->image[y * data->width * 3 + x * 3 + 0] = cut(color.x * 255.0);
       data->image[y * data->width * 3 + x * 3 + 1] = cut(color.y * 255.0);
       data->image[y * data->width * 3 + x * 3 + 2] = cut(color.z * 255.0);
     }
-    if ((int)((y - data->startIndex) * 20.0 / (data->height / NTHREAD)) > progress) {
-      progress = (int)((y - data->startIndex) * 20.0 / (data->height / NTHREAD));
+    if ((int)(y_ * 20.0 / (data->height / NTHREAD)) > progress) {
+      progress = (int)(y_ * 20.0 / (data->height / NTHREAD));
       printf("Thread %d:\t%d%%\tdone...\n", data->id, progress * 5);
     }
   }
@@ -138,7 +139,6 @@ void World::createImageFromView(glm::vec3 eye, glm::vec3 direction, glm::vec3 up
 
   for(int t = 0; t < NTHREAD; t++) {
     data[t].id = t;
-    data[t].startIndex = t * height / NTHREAD;
     data[t].world = this;
     data[t].width = width;
     data[t].height = height;
