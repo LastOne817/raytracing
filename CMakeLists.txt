@@ -55,6 +55,7 @@ target_link_libraries(hw5
 )
 
 SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*" )
+set_property(TARGET hw5 PROPERTY CXX_STANDARD 14)
 
 add_custom_command(
   TARGET hw5 POST_BUILD
