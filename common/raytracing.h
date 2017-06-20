@@ -11,7 +11,7 @@
 
 #define DEPTH_MAX 10
 
-#define NTHREAD 16
+#define NTHREAD 8
 
 class Light {
 public:

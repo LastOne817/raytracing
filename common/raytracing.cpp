@@ -174,7 +174,7 @@ void World::createImageFromView(glm::vec3 eye, glm::vec3 direction, glm::vec3 up
 }
 
 glm::vec3 World::calculateColor(int x, int y, glm::vec3 direction, glm::vec3 right, glm::vec3 up, int width, int height, double view_width, double view_height) const {
-  bool distributed = false;
+  bool distributed = true;
   glm::vec3 color;
   if (distributed) {
     color = glm::vec3(0);

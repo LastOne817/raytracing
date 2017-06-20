@@ -59,12 +59,26 @@ public:
     double v(glm::vec3) const;
 };
 
+class Triangle {
+private:
+    std::vector<glm::vec3> vertices;
+    std::vector<glm::vec3> normals;
+    glm::vec3 normal;
+public:
+    Triangle(glm::vec3, glm::vec3, glm::vec3);
+    Triangle(glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3);
+    std::experimental::optional<glm::vec3> intersect(Ray r) const;
+    bool contains(glm::vec3 p) const;
+    glm::vec3 normalAt(glm::vec3) const;
+    Ray reflect(Ray ray, double n) const;
+    Ray refract(Ray ray, double n) const;
+};
+
 class Polygon : Object {
 private:
-    glm::vec3 normal;
-    glm::vec3 point;
-    std::vector<glm::vec3> vertices;
+    std::vector<Triangle> planes;
 public:
+    Polygon(std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, double gloss, double n, bool reflective, bool refractive);
     Polygon(std::vector<glm::vec3> vertices, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, double gloss, double n, bool reflective, bool refractive);
     std::experimental::optional<glm::vec3> intersect(Ray r) const;
     glm::vec3 normalAt(glm::vec3) const;
